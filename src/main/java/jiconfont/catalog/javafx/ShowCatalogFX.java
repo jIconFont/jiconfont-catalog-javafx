@@ -1,4 +1,4 @@
-package jiconfont.javafx.demo;
+package jiconfont.catalog.javafx;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -38,12 +38,12 @@ public class ShowCatalogFX extends Application {
         IconFontFX.register(Entypo.getIconFont());
         CatalogPane catalogPane = new CatalogPane();
         for (FontAwesome icon : FontAwesome.values()) {
-           catalogPane.register(icon);
+            catalogPane.register(icon);
         }
         for (GoogleMaterialDesignIcons icon : GoogleMaterialDesignIcons.values()) {
             catalogPane.register(icon);
         }
-                for (Iconic icon : Iconic.values()) {
+        for (Iconic icon : Iconic.values()) {
             catalogPane.register(icon);
         }
         for (Elusive icon : Elusive.values()) {
