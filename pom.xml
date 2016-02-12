@@ -13,12 +13,6 @@
     <version>0.1.0</version>
     <packaging>jar</packaging>
 
-    <parent>
-        <groupId>com.github.jiconfont</groupId>
-        <artifactId>jiconfont-bundle</artifactId>
-        <version>1.0.0</version>
-    </parent>
-
     <name>jIconFont - Catalog - JavaFX</name>
     <description>jIconFont Catalog JavaFX
     </description>
@@ -65,6 +59,11 @@
             <groupId>com.github.jiconfont</groupId>
             <artifactId>jiconfont-javafx</artifactId>
             <version>0.10.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.jiconfont</groupId>
+            <artifactId>jiconfont-bundle</artifactId>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
 

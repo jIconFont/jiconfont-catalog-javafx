@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.CacheHint;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
@@ -119,7 +120,6 @@ public class CatalogPane extends BorderPane {
     public CheckBox getCheckBox() {
         if (checkBox == null) {
             checkBox = new CheckBox("Show icon name");
-            checkBox.setSelected(true);
             checkBox.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
@@ -147,32 +147,20 @@ public class CatalogPane extends BorderPane {
 
 
     public final void update() {
-        VBox vBox = new VBox();
-        vBox.setFillWidth(true);
+        TilePane pane = new TilePane();
+        pane.setHgap(5);
+        pane.setVgap(10);
 
-        vBox.setBackground(new Background(
-                new BackgroundFill(getBackgroundColorPicker().getValue(), null, null)));
+        pane.setBackground(new Background(new BackgroundFill(getBackgroundColorPicker().getValue(),null,null)));
+        pane.setBorder(new Border(new BorderStroke(getBackgroundColorPicker().getValue(),          BorderStrokeStyle.SOLID, null, new BorderWidths(10, 5, 10, 5))));
 
-        for (IconCollection iconCollection : getIcons().values()) {
-            Label fontFamilyTitle = new Label(iconCollection.getName());
-            fontFamilyTitle.setTextFill(getIconColorPicker().getValue());
-            fontFamilyTitle.setStyle("-fx-font-size: 22px;");
-            VBox.setMargin(fontFamilyTitle, new Insets(10, 0, 10, 20));
-            vBox.getChildren().addAll(fontFamilyTitle);
-
-            TilePane pane = new TilePane();
-            pane.setHgap(5);
-            pane.setVgap(10);
-
-            pane.setBorder(new Border(new BorderStroke(Color.TRANSPARENT,
-                    BorderStrokeStyle.SOLID, null, new BorderWidths(5, 5, 5, 5))));
+        for (final IconCollection iconCollection : getIcons().values()) {
 
             for (final IconCode icon : iconCollection.getIcons()) {
                 IconNode iconNode = new IconNode();
                 iconNode.setIconCode(icon);
                 iconNode.setIconSize(getSpinner().getValue());
                 iconNode.setFill(getIconColorPicker().getValue());
-                iconNode.setFontSmoothingType(FontSmoothingType.LCD);
 
                 Node node = null;
                 if (getCheckBox().isSelected()) {
@@ -189,7 +177,7 @@ public class CatalogPane extends BorderPane {
                 node.setOnMouseEntered(new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent event) {
-                        getIconUnderMouse().setText("Icon: " + icon.name());
+                        getIconUnderMouse().setText(iconCollection.getName()+": "+ icon.name());
                     }
                 });
                 node.setOnMouseExited(new EventHandler<MouseEvent>() {
@@ -198,15 +186,13 @@ public class CatalogPane extends BorderPane {
                         getIconUnderMouse().setText("");
                     }
                 });
-                // node.setCache(true);
-                //   node.setCacheHint(CacheHint.QUALITY);
+              //   node.setCache(true);
+             //      node.setCacheHint(CacheHint.QUALITY);
                 pane.getChildren().add(node);
             }
-
-            vBox.getChildren().addAll(pane);
         }
 
-        ScrollPane sp = new ScrollPane(vBox);
+        ScrollPane sp = new ScrollPane(pane);
 
 
         sp.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
