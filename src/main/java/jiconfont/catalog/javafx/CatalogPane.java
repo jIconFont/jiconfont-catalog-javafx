@@ -6,13 +6,29 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.CacheHint;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
-import javafx.scene.text.FontSmoothingType;
 import jiconfont.IconCode;
 import jiconfont.javafx.IconNode;
 
@@ -42,23 +58,41 @@ import java.util.Map;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class CatalogPane extends BorderPane {
+public class CatalogPane extends GridPane {
 
     private Label iconUnderMouse;
-    private HBox configPane;
+    private HBox tabPane1;
+    private HBox tabPane2;
     private ColorPicker iconColorPicker;
     private ColorPicker backgroundColorPicker;
-
-    private Spinner<Integer> spinner;
-    private CheckBox checkBox;
+    private Spinner<Integer> sizeSpinner;
+    private CheckBox showNameCheckBox;
+    private TextField filterField;
     private Map<String, IconCollection> icons = new HashMap<>();
+    private ScrollPane scrollPane;
 
     public CatalogPane() {
         setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
-        BorderPane.setMargin(getConfigPane(), new Insets(5, 5, 5, 5));
-        BorderPane.setMargin(getIconUnderMouse(), new Insets(0, 5, 5, 5));
-        setTop(getConfigPane());
-        setBottom(getIconUnderMouse());
+
+        add(getTabPane1(), 0, 0);
+        add(getTabPane2(), 0, 1);
+        add(getScrollPane(), 0, 2);
+        add(getIconUnderMouse(), 0, 3);
+
+        GridPane.setHgrow(getTabPane1(), Priority.ALWAYS);
+        GridPane.setHgrow(getTabPane2(), Priority.ALWAYS);
+        GridPane.setHgrow(getScrollPane(), Priority.ALWAYS);
+        GridPane.setHgrow(getIconUnderMouse(), Priority.ALWAYS);
+
+        setVgap(5);
+
+        GridPane.setVgrow(getScrollPane(), Priority.ALWAYS);
+
+        GridPane.setMargin(getTabPane1(), new Insets(5, 5, 0, 5));
+        GridPane.setMargin(getTabPane2(), new Insets(0, 5, 0, 5));
+        GridPane.setMargin(getScrollPane(), new Insets(0, 5, 0, 5));
+        GridPane.setMargin(getIconUnderMouse(), new Insets(0, 5, 5, 5));
+
         update();
     }
 
@@ -83,6 +117,21 @@ public class CatalogPane extends BorderPane {
         return iconColorPicker;
     }
 
+
+    public TextField getFilterField() {
+        if (filterField == null) {
+            filterField = new TextField();
+            filterField.setPrefColumnCount(30);
+            filterField.setOnKeyReleased(new EventHandler<KeyEvent>() {
+                @Override
+                public void handle(KeyEvent event) {
+                    update();
+                }
+            });
+        }
+        return filterField;
+    }
+
     public ColorPicker getBackgroundColorPicker() {
         if (backgroundColorPicker == null) {
             backgroundColorPicker = new ColorPicker();
@@ -97,16 +146,16 @@ public class CatalogPane extends BorderPane {
         return backgroundColorPicker;
     }
 
-    public Spinner<Integer> getSpinner() {
-        if (spinner == null) {
-            spinner = new Spinner<>();
-            spinner.setEditable(true);
+    public Spinner<Integer> getSizeSpinner() {
+        if (sizeSpinner == null) {
+            sizeSpinner = new Spinner<>();
+            sizeSpinner.setEditable(true);
             SpinnerValueFactory svf =
                     new SpinnerValueFactory.IntegerSpinnerValueFactory(12, 48);
             svf.setValue(new Integer(25));
-            spinner.setValueFactory(svf);
+            sizeSpinner.setValueFactory(svf);
 
-            spinner.valueProperty().addListener(new ChangeListener<Integer>() {
+            sizeSpinner.valueProperty().addListener(new ChangeListener<Integer>() {
                 @Override
                 public void changed(ObservableValue<? extends Integer> observable,
                                     Integer oldValue, Integer newValue) {
@@ -114,92 +163,111 @@ public class CatalogPane extends BorderPane {
                 }
             });
         }
-        return spinner;
+        return sizeSpinner;
     }
 
-    public CheckBox getCheckBox() {
-        if (checkBox == null) {
-            checkBox = new CheckBox("Show icon name");
-            checkBox.setOnAction(new EventHandler<ActionEvent>() {
+    public CheckBox getShowNameCheckBox() {
+        if (showNameCheckBox == null) {
+            showNameCheckBox = new CheckBox("Show icon name");
+            showNameCheckBox.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
                     update();
                 }
             });
         }
-        return checkBox;
+        return showNameCheckBox;
     }
 
-    public HBox getConfigPane() {
-        if (configPane == null) {
-            configPane = new HBox();
-            configPane.setSpacing(3);
-            configPane.setAlignment(Pos.CENTER_LEFT);
-            configPane.getChildren().addAll(getCheckBox(), new Label("Icon size:"),
-                    getSpinner(), new Label("Icon color:"), getIconColorPicker(),
-                    new Label("Background:"), getBackgroundColorPicker());
-            HBox.setMargin(getCheckBox(), new Insets(0, 10, 0, 0));
-            HBox.setMargin(getSpinner(), new Insets(0, 10, 0, 0));
-            HBox.setMargin(getIconColorPicker(), new Insets(0, 10, 0, 0));
+    public HBox getTabPane1() {
+        if (tabPane1 == null) {
+            tabPane1 = new HBox();
+            tabPane1.setSpacing(3);
+            tabPane1.setAlignment(Pos.CENTER_LEFT);
+            tabPane1.getChildren().addAll(getShowNameCheckBox(), new Label("Icon size:"),
+                    getSizeSpinner(), new Label("Filter:"),
+                    getFilterField());
+            HBox.setMargin(getShowNameCheckBox(), new Insets(0, 20, 0, 0));
+            HBox.setMargin(getSizeSpinner(), new Insets(0, 20, 0, 0));
         }
-        return configPane;
+        return tabPane1;
     }
 
+    public HBox getTabPane2() {
+        if (tabPane2 == null) {
+            tabPane2 = new HBox();
+            tabPane2.setSpacing(3);
+            tabPane2.setAlignment(Pos.CENTER_LEFT);
+            tabPane2.getChildren().addAll(new Label("Icon color:"), getIconColorPicker(),
+                    new Label("Background:"), getBackgroundColorPicker());
+            HBox.setMargin(getIconColorPicker(), new Insets(0, 20, 0, 0));
+            tabPane2.setMinHeight(Region.USE_PREF_SIZE);
+            tabPane2.setFillHeight(true);
+        }
+        return tabPane2;
+    }
 
     public final void update() {
         TilePane pane = new TilePane();
         pane.setHgap(5);
         pane.setVgap(10);
 
-        pane.setBackground(new Background(new BackgroundFill(getBackgroundColorPicker().getValue(),null,null)));
-        pane.setBorder(new Border(new BorderStroke(getBackgroundColorPicker().getValue(),          BorderStrokeStyle.SOLID, null, new BorderWidths(10, 5, 10, 5))));
+        pane.setBackground(new Background(new BackgroundFill(getBackgroundColorPicker().getValue(), null, null)));
+        pane.setBorder(new Border(new BorderStroke(getBackgroundColorPicker().getValue(), BorderStrokeStyle.SOLID, null, new BorderWidths(10, 5, 10, 5))));
 
-        for (final IconCollection iconCollection : getIcons().values()) {
+        String text = getFilterField().getText().toLowerCase();
+
+        for (final IconCollection iconCollection : icons.values()) {
 
             for (final IconCode icon : iconCollection.getIcons()) {
-                IconNode iconNode = new IconNode();
-                iconNode.setIconCode(icon);
-                iconNode.setIconSize(getSpinner().getValue());
-                iconNode.setFill(getIconColorPicker().getValue());
+                if (icon.name().toLowerCase().contains(text)) {
+                    IconNode iconNode = new IconNode();
+                    iconNode.setIconCode(icon);
+                    iconNode.setIconSize(getSizeSpinner().getValue());
+                    iconNode.setFill(getIconColorPicker().getValue());
 
-                Node node = null;
-                if (getCheckBox().isSelected()) {
-                    Label label = new Label(icon.name());
-                    label.setTextFill(getIconColorPicker().getValue());
-                    label.setStyle("-fx-font-size: 9px;");
-                    label.setContentDisplay(ContentDisplay.TOP);
-                    label.setGraphic(iconNode);
-                    node = label;
-                } else {
-                    node = iconNode;
+                    Node node = null;
+                    if (getShowNameCheckBox().isSelected()) {
+                        Label label = new Label(icon.name());
+                        label.setTextFill(getIconColorPicker().getValue());
+                        label.setStyle("-fx-font-size: 9px;");
+                        label.setContentDisplay(ContentDisplay.TOP);
+                        label.setGraphic(iconNode);
+                        node = label;
+                    } else {
+                        node = iconNode;
+                    }
+
+                    node.setOnMouseEntered(new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(MouseEvent event) {
+                            getIconUnderMouse().setText(iconCollection.getName() + ": " + icon.name());
+                        }
+                    });
+                    node.setOnMouseExited(new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(MouseEvent event) {
+                            getIconUnderMouse().setText("");
+                        }
+                    });
+                    //   node.setCache(true);
+                    //      node.setCacheHint(CacheHint.QUALITY);
+                    pane.getChildren().add(node);
                 }
-
-                node.setOnMouseEntered(new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent event) {
-                        getIconUnderMouse().setText(iconCollection.getName()+": "+ icon.name());
-                    }
-                });
-                node.setOnMouseExited(new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent event) {
-                        getIconUnderMouse().setText("");
-                    }
-                });
-              //   node.setCache(true);
-             //      node.setCacheHint(CacheHint.QUALITY);
-                pane.getChildren().add(node);
             }
         }
 
-        ScrollPane sp = new ScrollPane(pane);
+        getScrollPane().setContent(pane);
+    }
 
-
-        sp.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
-        sp.setFitToWidth(true);
-        sp.setFitToHeight(true);
-        BorderPane.setMargin(sp, new Insets(5, 5, 5, 5));
-        setCenter(sp);
+    public ScrollPane getScrollPane() {
+        if (scrollPane == null) {
+            scrollPane = new ScrollPane();
+            scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+            scrollPane.setFitToWidth(true);
+            scrollPane.setFitToHeight(true);
+        }
+        return scrollPane;
     }
 
     public void register(IconCode icon) {
@@ -209,10 +277,6 @@ public class CatalogPane extends BorderPane {
             icons.put(icon.getFontFamily(), iconCollection);
         }
         iconCollection.add(icon);
-    }
-
-    public Map<String, IconCollection> getIcons() {
-        return icons;
     }
 
     private static class IconCollection {
