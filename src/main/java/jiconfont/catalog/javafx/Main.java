@@ -3,7 +3,11 @@ package jiconfont.catalog.javafx;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import jiconfont.icons.*;
+import jiconfont.icons.Elusive;
+import jiconfont.icons.Entypo;
+import jiconfont.icons.FontAwesome;
+import jiconfont.icons.GoogleMaterialDesignIcons;
+import jiconfont.icons.Iconic;
 import jiconfont.javafx.IconFontFX;
 
 /**
@@ -27,7 +31,7 @@ import jiconfont.javafx.IconFontFX;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class ShowCatalogFX extends Application {
+public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
@@ -36,7 +40,9 @@ public class ShowCatalogFX extends Application {
         IconFontFX.register(Iconic.getIconFont());
         IconFontFX.register(Elusive.getIconFont());
         IconFontFX.register(Entypo.getIconFont());
+
         CatalogPane catalogPane = new CatalogPane();
+
         for (FontAwesome icon : FontAwesome.values()) {
             catalogPane.register(icon);
         }
@@ -52,9 +58,12 @@ public class ShowCatalogFX extends Application {
         for (Entypo icon : Entypo.values()) {
             catalogPane.register(icon);
         }
+
         catalogPane.update();
+
         Scene scene = new Scene(catalogPane, 950, 650);
-        stage.setTitle("jIconFont - JavaFX - Catalog");
+
+        stage.setTitle("jIconFont - Catalog - JavaFX");
         stage.setScene(scene);
         stage.show();
         stage.centerOnScreen();
