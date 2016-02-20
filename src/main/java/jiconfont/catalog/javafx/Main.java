@@ -3,11 +3,9 @@ package jiconfont.catalog.javafx;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import jiconfont.icons.Elusive;
-import jiconfont.icons.Entypo;
-import jiconfont.icons.FontAwesome;
-import jiconfont.icons.GoogleMaterialDesignIcons;
-import jiconfont.icons.Iconic;
+import jiconfont.IconCode;
+import jiconfont.IconFont;
+import jiconfont.bundle.Bundle;
 import jiconfont.javafx.IconFontFX;
 
 /**
@@ -35,27 +33,13 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
-        IconFontFX.register(FontAwesome.getIconFont());
-        IconFontFX.register(GoogleMaterialDesignIcons.getIconFont());
-        IconFontFX.register(Iconic.getIconFont());
-        IconFontFX.register(Elusive.getIconFont());
-        IconFontFX.register(Entypo.getIconFont());
+        for (IconFont iconFont : Bundle.getIconFonts()) {
+            IconFontFX.register(iconFont);
+        }
 
         CatalogPane catalogPane = new CatalogPane();
 
-        for (FontAwesome icon : FontAwesome.values()) {
-            catalogPane.register(icon);
-        }
-        for (GoogleMaterialDesignIcons icon : GoogleMaterialDesignIcons.values()) {
-            catalogPane.register(icon);
-        }
-        for (Iconic icon : Iconic.values()) {
-            catalogPane.register(icon);
-        }
-        for (Elusive icon : Elusive.values()) {
-            catalogPane.register(icon);
-        }
-        for (Entypo icon : Entypo.values()) {
+        for (IconCode icon : Bundle.getIcons()) {
             catalogPane.register(icon);
         }
 
