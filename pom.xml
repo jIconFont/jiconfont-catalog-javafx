@@ -59,13 +59,13 @@
         <dependency>
             <groupId>com.github.jiconfont</groupId>
             <artifactId>jiconfont-bundle</artifactId>
-            <version>1.1.0</version>
+            <version>1.2.1</version>
         </dependency>
 
         <dependency>
             <groupId>com.github.jiconfont</groupId>
             <artifactId>jiconfont-javafx</artifactId>
-            <version>0.10.0</version>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
 
